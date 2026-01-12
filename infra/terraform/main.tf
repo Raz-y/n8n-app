@@ -27,6 +27,10 @@ resource "aws_instance" "n8n" {
   key_name               = var.ssh_key_name
   vpc_security_group_ids = [aws_security_group.n8n_sg.id]
 
+  root_block_device {
+    volume_size = 20
+    volume_type = "gp3"
+  }
   tags = {
     Name    = var.instance_name
     project = "n8n"
