@@ -38,6 +38,21 @@ resource "aws_instance" "n8n" {
   }
 }
 
+# Elastic IP
+resource "aws_eip" "n8n" {
+  domain = "vpc"
+
+  tags = {
+    Name      = "n8n-eip"
+    ManagedBy = "terraform"
+  }
+}
+
+resource "aws_eip_association" "n8n" {
+  instance_id   = aws_instance.n8n.id
+  allocation_id = aws_eip.n8n.id
+}
+
 # SG
 resource "aws_security_group" "n8n_sg" {
   name        = "${var.instance_name}-sg"
