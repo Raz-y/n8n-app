@@ -1,17 +1,17 @@
 # Terraform
-.terraform/
-*.tfstate
-*.tfstate.*
-.terraform.lock.hcl
+**/.terraform/
+**/.terraform.lock.hcl
+**/*.tfstate
+**/*.tfstate.*
+**/terraform.tfvars
+**/*.tfvars
+**/crash.log
 
-# Terraform variables
-terraform.tfvars
-*.tfvars
-*.tfvars.json
+# Secrets
+**/.env
+**/.env.*
+!.env.example
 
 # SSH keys
-*.pem
-
-# ENV
-*.env
-**/.env
+**/*.pem
+**/*.key

@@ -1,8 +1,3 @@
-provider "aws" {
-  region  = var.aws_region
-  profile = var.aws_profile
-}
-
 # AMI 
 data "aws_ami" "amazon_linux_2023" {
   most_recent = true
@@ -97,4 +92,9 @@ resource "aws_security_group" "n8n_sg" {
     owner   = "raz"
   }
 
+}
+
+# Route53
+resource "aws_route53_zone" "primary" {
+  name = var.domain_name
 }

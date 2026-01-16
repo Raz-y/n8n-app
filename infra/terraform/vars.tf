@@ -29,3 +29,8 @@ variable "instance_type" {
   description = "Type for the EC2 instance"
   type        = string
 }
+
+variable "domain_name" {
+  type        = string
+  description = "Your root domain, e.g. example.com"
+}
