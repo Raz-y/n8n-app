@@ -107,3 +107,22 @@ resource "aws_route53_record" "n8n" {
   ttl     = 300
   records = [aws_eip.n8n.public_ip]
 }
+
+# Storage
+resource "aws_ebs_volume" "n8n_data" {
+  availability_zone = aws_instance.n8n.availability_zone
+  size              = 30
+  type              = "gp3"
+
+  tags = {
+    Name    = "n8n-data"
+    project = "n8n"
+    owner   = "raz"
+  }
+}
+
+resource "aws_volume_attachment" "n8n_data_attach" {
+  device_name = "/dev/sdf"
+  volume_id   = aws_ebs_volume.n8n_data.id
+  instance_id = aws_instance.n8n.id
+}
