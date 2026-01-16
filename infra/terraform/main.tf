@@ -98,3 +98,12 @@ resource "aws_security_group" "n8n_sg" {
 resource "aws_route53_zone" "primary" {
   name = var.domain_name
 }
+
+# DNS Records
+resource "aws_route53_record" "n8n" {
+  zone_id = aws_route53_zone.primary.id
+  name    = "n8n.${var.domain_name}"
+  type    = "A"
+  ttl     = 300
+  records = [aws_eip.n8n.public_ip]
+}
