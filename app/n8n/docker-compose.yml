@@ -8,8 +8,8 @@ services:
       - "443:443"
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./caddy/data:/data
-      - ./caddy/config:/config
+      - /opt/n8n/caddy/data:/data
+      - /opt/n8n/caddy/config:/config
     depends_on:
       - n8n
   n8n:
