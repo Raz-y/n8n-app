@@ -22,15 +22,23 @@ resource "aws_instance" "n8n" {
   key_name               = var.ssh_key_name
   vpc_security_group_ids = [aws_security_group.n8n_sg.id]
 
+  user_data = templatefile("${path.module}/user_data/bootstrap.sh.tpl", {
+    n8n_host     = "n8n.${var.domain_name}"
+    n8n_user     = var.n8n_auth_user
+    n8n_password = var.n8n_auth_password
+  })
   root_block_device {
     volume_size = 30
     volume_type = "gp3"
   }
+
+  user_data_replace_on_change = true
   tags = {
     Name    = var.instance_name
     project = "n8n"
     owner   = "raz"
   }
+
 }
 
 # Elastic IP
@@ -118,6 +126,10 @@ resource "aws_ebs_volume" "n8n_data" {
     Name    = "n8n-data"
     project = "n8n"
     owner   = "raz"
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 

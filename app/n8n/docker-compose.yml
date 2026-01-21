@@ -7,17 +7,17 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/n8n/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - /opt/n8n/caddy/data:/data
       - /opt/n8n/caddy/config:/config
     depends_on:
       - n8n
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:1.70.0
     container_name: n8n
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5678:5678"
+      - "5678:5678"
     environment:
       - N8N_PORT=5678
       - N8N_HOST=${N8N_HOST}
