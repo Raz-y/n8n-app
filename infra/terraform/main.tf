@@ -128,9 +128,9 @@ resource "aws_ebs_volume" "n8n_data" {
     owner   = "raz"
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "aws_volume_attachment" "n8n_data_attach" {
