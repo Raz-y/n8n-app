@@ -33,20 +33,6 @@ if [ -z "$DATA_DEV" ]; then
   exit 1
 fi
 
-# Find and mount EBS data volume (attached as /dev/sdf, appears as /dev/nvme1n1)
-DATA_DEV=""
-for dev in /dev/nvme1n1 /dev/xvdf /dev/sdf; do
-  if [ -b "$dev" ]; then
-    DATA_DEV="$dev"
-    break
-  fi
-done
-
-if [ -z "$DATA_DEV" ]; then
-  echo "ERROR: No data volume found!" >&2
-  exit 1
-fi
-
 # Format only if not already formatted (preserves data on instance replacement)
 if ! blkid "$DATA_DEV" | grep -q 'TYPE='; then
   mkfs.ext4 -L n8n-data "$DATA_DEV"
@@ -62,19 +48,19 @@ mount /opt/n8n
 mkdir -p /opt/n8n/{app,n8n_data,caddy/data,caddy/config}
 chown -R 1000:1000 /opt/n8n/n8n_data  # n8n runs as UID 1000
 
-# Clone app files (or copy from S3)
+# Clone app files
 dnf install -y git
 git clone https://github.com/Raz-y/n8n-app.git /tmp/n8n-repo
-cp /tmp/n8n-repo/app/n8n/docker-compose.yml /opt/n8n/app
+cp /tmp/n8n-repo/app/n8n/docker-compose.yml /opt/n8n/app/
 cp /tmp/n8n-repo/app/n8n/caddy/Caddyfile /opt/n8n/caddy/
 
-# Create .env file 
-cat > /opt/n8n/.env << 'EOF'
+# Create .env file (variables injected by Terraform)
+cat > /opt/n8n/app/.env << 'ENVFILE'
 N8N_HOST=${n8n_host}
 WEBHOOK_URL=https://${n8n_host}
 N8N_BASIC_AUTH_USER=${n8n_user}
 N8N_BASIC_AUTH_PASSWORD=${n8n_password}
-EOF
+ENVFILE
 
 # Start containers
 cd /opt/n8n/app
