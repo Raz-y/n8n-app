@@ -41,16 +41,24 @@ fi
 # Mount at /opt/n8n
 mkdir -p /opt/n8n
 UUID=$(blkid -s UUID -o value "$DATA_DEV")
-echo "UUID=$UUID /opt/n8n ext4 defaults,nofail 0 2" >> /etc/fstab
+# Only append if not already present
+if ! grep -q "UUID=$UUID" /etc/fstab; then
+  echo "UUID=$UUID /opt/n8n ext4 defaults,nofail 0 2" >> /etc/fstab
+fi
 mount /opt/n8n
 
 # Create directory structure for volumes
 mkdir -p /opt/n8n/{app,n8n_data,caddy/data,caddy/config}
-chown -R 1000:1000 /opt/n8n/n8n_data  # n8n runs as UID 1000
+
+# Set ownership: n8n runs as node (UID 1000), Caddy runs as root
+chown -R 1000:1000 /opt/n8n/n8n_data
+chown -R root:root /opt/n8n/caddy/data /opt/n8n/caddy/config
+chmod 755 /opt/n8n/caddy/data /opt/n8n/caddy/config
 
 # Clone app files
 dnf install -y git
 git clone https://github.com/Raz-y/n8n-app.git /tmp/n8n-repo
+chown -R ec2-user:ec2-user /tmp/n8n-repo  # Allow ec2-user to git pull later
 cp /tmp/n8n-repo/app/n8n/docker-compose.yml /opt/n8n/app/
 cp /tmp/n8n-repo/app/n8n/caddy/Caddyfile /opt/n8n/caddy/
 

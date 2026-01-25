@@ -27,12 +27,21 @@ resource "aws_instance" "n8n" {
     n8n_user     = var.n8n_auth_user
     n8n_password = var.n8n_auth_password
   })
+
   root_block_device {
     volume_size = 30
     volume_type = "gp3"
+    encrypted   = true
+  }
+
+  # Enforce IMDSv2 for enhanced security
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
 
   user_data_replace_on_change = true
+
   tags = {
     Name    = var.instance_name
     project = "n8n"
@@ -103,6 +112,8 @@ resource "aws_security_group" "n8n_sg" {
 }
 
 # Route53
+# After terraform apply, update your domain registrar's NS records
+# to point to the AWS nameservers (see terraform output route53_nameservers)
 resource "aws_route53_zone" "primary" {
   name = var.domain_name
 }
@@ -121,16 +132,16 @@ resource "aws_ebs_volume" "n8n_data" {
   availability_zone = aws_instance.n8n.availability_zone
   size              = 30
   type              = "gp3"
+  encrypted         = true
 
   tags = {
     Name    = "n8n-data"
     project = "n8n"
     owner   = "raz"
   }
-
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "aws_volume_attachment" "n8n_data_attach" {
