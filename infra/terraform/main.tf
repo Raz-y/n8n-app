@@ -140,7 +140,7 @@ resource "aws_ebs_volume" "n8n_data" {
     owner   = "raz"
   }
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
