@@ -41,11 +41,21 @@ fi
 # Mount at /opt/n8n
 mkdir -p /opt/n8n
 UUID=$(blkid -s UUID -o value "$DATA_DEV")
+
 # Only append if not already present
 if ! grep -q "UUID=$UUID" /etc/fstab; then
   echo "UUID=$UUID /opt/n8n ext4 defaults,nofail 0 2" >> /etc/fstab
 fi
+
+# Mount volume (will also work on reboot via fstab)
 mount /opt/n8n
+
+# Verify mount succeeded
+if ! mountpoint -q /opt/n8n; then
+  echo "ERROR: Failed to mount /opt/n8n!" >&2
+  exit 1
+fi
+echo "Successfully mounted EBS volume at /opt/n8n"
 
 # Create directory structure for volumes
 mkdir -p /opt/n8n/{app,n8n_data,caddy/data,caddy/config}

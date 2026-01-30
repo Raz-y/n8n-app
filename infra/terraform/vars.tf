@@ -10,14 +10,10 @@ variable "aws_profile" {
   default     = "raz-admin"
 }
 
-variable "ssh_ingress_cidr" {
-  description = "ip in CIDR notation, e.g. 1.2.3.4./32"
+variable "owner" {
+  description = "Owner name for tags"
   type        = string
-}
-
-variable "ssh_key_name" {
-  description = "Name of the existing EC2 SSH key pair"
-  type        = string
+  default     = "raz"
 }
 
 variable "instance_name" {
