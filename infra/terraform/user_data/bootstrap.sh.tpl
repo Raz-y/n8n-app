@@ -2,10 +2,6 @@
 set -euo pipefail
 exec > >(tee /var/log/user-data.log) 2>&1
 
-#!/bin/bash
-set -euo pipefail
-exec > >(tee /var/log/user-data.log) 2>&1
-
 dnf update -y
 
 # Ensure SSM Agent is installed and running (required for Session Manager)
