@@ -48,6 +48,8 @@ resource "aws_instance" "n8n" {
     owner   = "raz"
   }
 
+  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
+
 }
 
 # Elastic IP
@@ -149,3 +151,27 @@ resource "aws_volume_attachment" "n8n_data_attach" {
   volume_id   = aws_ebs_volume.n8n_data.id
   instance_id = aws_instance.n8n.id
 }
+
+# AWS SSM
+resource "aws_iam_role" "ec2_ssm_role" {
+  name = "n8n-ec2-ssm-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
+      Principal = { Service = "ec2.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_policy" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "n8n-ec2-profile"
+  role = aws_iam_role.ec2_ssm_role.name
+}
+
