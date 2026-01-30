@@ -4,6 +4,12 @@ exec > >(tee /var/log/user-data.log) 2>&1
 
 dnf update -y
 
+# Ensure SSM Agent is installed and running (required for Session Manager)
+if ! systemctl is-enabled --quiet amazon-ssm-agent 2>/dev/null; then
+  dnf install -y amazon-ssm-agent
+fi
+systemctl enable --now amazon-ssm-agent
+
 # Install Docker + Compose plugin
 dnf install -y docker
 mkdir -p /usr/local/lib/docker/cli-plugins
