@@ -32,8 +32,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    command: |
-      sh -c "test -f /opt/n8n/n8n_data/database.sqlite && echo 'Database found' || echo 'WARNING: No database!'; n8n"
     environment:
       - N8N_PORT=5678
       - N8N_HOST=${N8N_HOST}
