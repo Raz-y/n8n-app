@@ -2,6 +2,10 @@
 set -euo pipefail
 exec > >(tee /var/log/user-data.log) 2>&1
 
+#!/bin/bash
+set -euo pipefail
+exec > >(tee /var/log/user-data.log) 2>&1
+
 dnf update -y
 
 # Ensure SSM Agent is installed and running (required for Session Manager)
@@ -17,7 +21,6 @@ curl -SL "https://github.com/docker/compose/releases/latest/download/docker-comp
   -o /usr/local/lib/docker/cli-plugins/docker-compose
 chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 systemctl enable --now docker
-usermod -aG docker ec2-user
 
 # Wait for EBS volume to be attached (up to 2 minutes)
 DATA_DEV=""
@@ -48,8 +51,8 @@ fi
 mkdir -p /opt/n8n
 UUID=$(blkid -s UUID -o value "$DATA_DEV")
 
-# Only append if not already present
-if ! grep -q "UUID=$UUID" /etc/fstab; then
+# Add to fstab only if mountpoint not already configured
+if ! grep -qE '^\s*UUID=.*\s+/opt/n8n\s+' /etc/fstab; then
   echo "UUID=$UUID /opt/n8n ext4 defaults,nofail 0 2" >> /etc/fstab
 fi
 
@@ -63,29 +66,38 @@ if ! mountpoint -q /opt/n8n; then
 fi
 echo "Successfully mounted EBS volume at /opt/n8n"
 
-# Create directory structure for volumes
-mkdir -p /opt/n8n/{app,n8n_data,caddy/data,caddy/config}
+# Create directory structure
+mkdir -p /opt/n8n/{app,n8n_data,caddy}
 
-# Set ownership: n8n runs as node (UID 1000), Caddy runs as root
+# Set ownership: n8n runs as node (UID 1000)
 chown -R 1000:1000 /opt/n8n/n8n_data
-chown -R root:root /opt/n8n/caddy/data /opt/n8n/caddy/config
-chmod 755 /opt/n8n/caddy/data /opt/n8n/caddy/config
 
-# Clone app files
-dnf install -y git
-git clone https://github.com/Raz-y/n8n-app.git /tmp/n8n-repo
-chown -R ec2-user:ec2-user /tmp/n8n-repo  # Allow ec2-user to git pull later
-cp /tmp/n8n-repo/app/n8n/docker-compose.yml /opt/n8n/app/
-cp /tmp/n8n-repo/app/n8n/caddy/Caddyfile /opt/n8n/caddy/
+# Write docker-compose.yml from repo content
+cat > /opt/n8n/app/docker-compose.yml << 'COMPOSE'
+${docker_compose}
+COMPOSE
 
-# Create .env file (variables injected by Terraform)
+# Write Caddyfile from repo content (templated with host)
+cat > /opt/n8n/caddy/Caddyfile << 'CADDY'
+${caddyfile}
+CADDY
+
+# Create .env file with variables from Terraform
 cat > /opt/n8n/app/.env << 'ENVFILE'
 N8N_HOST=${n8n_host}
 WEBHOOK_URL=https://${n8n_host}
 N8N_BASIC_AUTH_USER=${n8n_user}
 N8N_BASIC_AUTH_PASSWORD=${n8n_password}
+N8N_ENCRYPTION_KEY=${n8n_encryption_key}
 ENVFILE
 
-# Start containers
-cd /opt/n8n/app
-docker compose up -d
+# Create systemd service for n8n stack
+cat > /etc/systemd/system/n8n.service << 'SYSTEMD'
+${n8n_service}
+SYSTEMD
+
+# Enable and start the n8n service
+systemctl daemon-reload
+systemctl enable --now n8n.service
+
+echo "Bootstrap complete. n8n stack is managed by systemd."

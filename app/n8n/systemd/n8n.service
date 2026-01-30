@@ -1,0 +1,16 @@
+[Unit]
+Description=n8n stack (docker compose)
+Requires=docker.service
+After=docker.service
+RequiresMountsFor=/opt/n8n
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/n8n/app
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

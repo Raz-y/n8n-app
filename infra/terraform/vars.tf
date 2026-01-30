@@ -43,3 +43,9 @@ variable "n8n_auth_password" {
   sensitive   = true
 }
 
+variable "n8n_encryption_key" {
+  description = "n8n encryption key for credentials (generate with: openssl rand -hex 32)"
+  type        = string
+  sensitive   = true
+}
+

@@ -5,9 +5,15 @@ resource "aws_instance" "n8n" {
   vpc_security_group_ids = [aws_security_group.n8n_sg.id]
 
   user_data = templatefile("${path.module}/user_data/bootstrap.sh.tpl", {
-    n8n_host     = "n8n.${var.domain_name}"
-    n8n_user     = var.n8n_auth_user
-    n8n_password = var.n8n_auth_password
+    n8n_host           = "n8n.${var.domain_name}"
+    n8n_user           = var.n8n_auth_user
+    n8n_password       = var.n8n_auth_password
+    n8n_encryption_key = var.n8n_encryption_key
+    docker_compose     = file("${path.module}/../../app/n8n/docker-compose.yml")
+    caddyfile = templatefile("${path.module}/../../app/n8n/caddy/Caddyfile", {
+      n8n_host = "n8n.${var.domain_name}"
+    })
+    n8n_service = file("${path.module}/../../app/n8n/systemd/n8n.service")
   })
 
   root_block_device {
