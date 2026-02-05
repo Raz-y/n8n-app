@@ -15,3 +15,6 @@
 # SSH keys
 **/*.pem
 **/*.key
+
+# .github agent instructions
+.github/*.md
