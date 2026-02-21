@@ -63,10 +63,13 @@ fi
 echo "Successfully mounted EBS volume at /opt/n8n"
 
 # Create directory structure
-mkdir -p /opt/n8n/{app,n8n_data,caddy}
+mkdir -p /opt/n8n/{app,n8n_data,caddy,postgres}
 
-# Set ownership: n8n runs as node (UID 1000)
+# Set ownership for container users
+# n8n runs as node (UID 1000)
 chown -R 1000:1000 /opt/n8n/n8n_data
+# postgres runs as postgres (UID 999)
+chown -R 999:999 /opt/n8n/postgres
 
 # Write docker-compose.yml from repo content
 cat > /opt/n8n/app/docker-compose.yml << 'COMPOSE'
@@ -85,6 +88,10 @@ WEBHOOK_URL=https://${n8n_host}
 N8N_BASIC_AUTH_USER=${n8n_user}
 N8N_BASIC_AUTH_PASSWORD=${n8n_password}
 N8N_ENCRYPTION_KEY=${n8n_encryption_key}
+POSTGRES_USER=${postgres_user}
+POSTGRES_PASSWORD=${postgres_password}
+POSTGRES_DB=${postgres_db}
+GENERIC_TIMEZONE=${timezone}
 ENVFILE
 
 # Create systemd service for n8n stack

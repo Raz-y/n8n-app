@@ -49,3 +49,28 @@ variable "n8n_encryption_key" {
   sensitive   = true
 }
 
+variable "postgres_user" {
+  description = "PostgreSQL database user"
+  type        = string
+  default     = "n8n"
+  sensitive   = true
+}
+
+variable "postgres_password" {
+  description = "PostgreSQL database password"
+  type        = string
+  sensitive   = true
+}
+
+variable "postgres_db" {
+  description = "PostgreSQL database name"
+  type        = string
+  default     = "n8n"
+}
+
+variable "generic_timezone" {
+  description = "Timezone for n8n and system (e.g., Asia/Jerusalem, UTC, America/New_York)"
+  type        = string
+  default     = "UTC"
+}
+

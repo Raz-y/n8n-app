@@ -1,4 +1,5 @@
 services:
+  # Caddy
   caddy:
     image: caddy:2.10.2
     container_name: caddy
@@ -12,12 +13,19 @@ services:
       - /opt/n8n/caddy/config:/config
     depends_on:
       - n8n
+  # N8N
   n8n:
     image: n8nio/n8n:2.4.4
     container_name: n8n
     restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
     expose:
       - "5678"
+
     healthcheck:
       test:
         [
@@ -32,14 +40,52 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
     environment:
+      # Instance Settings
       - N8N_PORT=5678
       - N8N_HOST=${N8N_HOST}
       - N8N_PROTOCOL=https
+      - WEBHOOK_URL=${WEBHOOK_URL}
       - N8N_TRUST_PROXY=true
+
+      # Database Configuration
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+
+      # Security
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+
+      # Timezone
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
+      - TZ=${GENERIC_TIMEZONE}
+
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
       - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
-      - WEBHOOK_URL=${WEBHOOK_URL}
+
     volumes:
       - /opt/n8n/n8n_data:/home/node/.n8n
+
+  # Postgres
+  postgres:
+    image: postgres:16-alpine
+    container_name: n8n-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - /opt/n8n/postgres:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

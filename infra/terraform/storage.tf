@@ -1,6 +1,7 @@
 # Encrypted EBS volume for n8n data persistence
 resource "aws_ebs_volume" "n8n_data" {
-  availability_zone = aws_instance.n8n.availability_zone
+  # Pin to specific AZ to prevent data loss when instance is replaced
+  availability_zone = data.aws_availability_zones.available.names[0]
   size              = 30
   type              = "gp3"
   encrypted         = true

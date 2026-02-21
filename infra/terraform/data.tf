@@ -13,3 +13,8 @@ data "aws_ami" "amazon_linux_2023" {
     values = ["hvm"]
   }
 }
+
+# Get available AZs in current region
+data "aws_availability_zones" "available" {
+  state = "available"
+}
