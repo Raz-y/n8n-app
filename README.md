@@ -2,7 +2,7 @@
 
 > **A progressive learning project** to master DevOps/SRE fundamentals.
 
-[![Phase](https://img.shields.io/badge/Phase-1--2_Transition-blue.svg)](docs/phase-1.md)
+[![Phase](https://img.shields.io/badge/Phase-2_Production_Foundations-blue.svg)](docs/CHANGELOG.md)
 [![Infrastructure](https://img.shields.io/badge/IaC-Terraform-623CE4.svg)](infra/terraform/)
 [![AWS](https://img.shields.io/badge/AWS-EC2_|_EBS_|_Route53-FF9900.svg)]()
 
@@ -50,11 +50,10 @@ EC2 Instance (t3a.small)
 
 ## 🎓 Learning Path
 
-**Current**: Phase 1-2 (Foundation + Infrastructure)
+**Current**: Phase 2 (Production Foundations)
 
 - **Foundation** ✅ - Compute, storage, networking basics
-- **Infrastructure** 🔄 - DNS, TLS, security, IaC
-- **Observability** 📋 - Monitoring, logging, alerting
+- **Infrastructure** 🔄 - DNS, TLS, security, IaC, observability
 - **Scalability** 📋 - Load balancing, auto-scaling, HA
 - **Automation** 📋 - CI/CD, secret management
 - **AI Integration** 📋 - Agent infrastructure, workflows

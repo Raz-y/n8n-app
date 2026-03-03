@@ -101,7 +101,7 @@ Never use `:latest` tags. Explicit versions ensure reproducibility and controlle
 - **t3a.small over t3.small**: 10% cost savings, same performance
 - **Amazon Linux 2023**: Latest AMI, long-term support
 - **Infrastructure as Code**: All infrastructure in version control from day one
-- **eu-west-1 region**: Primary deployment region
+- **eu-central-1 region**: Primary deployment region
 
 ---
 
