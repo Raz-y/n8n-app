@@ -64,7 +64,6 @@ EC2 Instance (t3a.small)
 
 ## 📚 Documentation
 
-- [Phase 1 Details](docs/phase-1.md) - Foundation phase documentation
 - [Changelog](docs/CHANGELOG.md) - Project history and decisions
 - [Copilot Instructions](.github/copilot-instructions.md) - AI assistant context - private. 
 
