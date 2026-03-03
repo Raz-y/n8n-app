@@ -4,6 +4,36 @@ Project history and key decisions for n8n on AWS.
 
 ---
 
+## [2026-03-03] Documentation Refactor
+
+### Changed
+- Removed Phase 1 documentation file (phase-1.md)
+- Updated README structure
+
+### Rationale
+Consolidated phase documentation into main README for better maintainability and clarity.
+
+---
+
+## [2026-02-21] PostgreSQL Database Integration
+
+### Added
+- **PostgreSQL container** for persistent data storage
+- **Database health checks** for dependency management
+- **Timezone configuration** support (GENERIC_TIMEZONE variable)
+- New Terraform variables for database credentials
+
+### Changed
+- n8n configuration migrated from SQLite to PostgreSQL
+- Docker Compose service dependencies (n8n waits for healthy postgres)
+- Enhanced environment variable structure with organized sections
+- Updated bootstrap script to pass database variables to containers
+
+### Key Decision
+Using containerized PostgreSQL instead of SQLite provides better data integrity, concurrent access, and prepares for future RDS migration. Keeps infrastructure simple while improving reliability.
+
+---
+
 ## [2026-02-05] Documentation & Setup
 
 ### Added
@@ -99,5 +129,5 @@ Never use `:latest` tags. Explicit versions ensure reproducibility and controlle
 ---
 
 **Project Start**: January 10, 2026  
-**Current Status**: Phase 1-2 Transition  
-**Last Updated**: February 5, 2026
+**Current Status**: Phase 2 - Production Foundations  
+**Last Updated**: March 3, 2026
