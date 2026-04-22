@@ -12,10 +12,11 @@ resource "aws_ebs_volume" "n8n_data" {
     Name    = "n8n-data"
     project = "n8n"
     owner   = var.owner
+    # Backup  = "true"
   }
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 }
 
